@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Collection;
 
 class EventsController extends BaseController
 {
@@ -97,7 +99,7 @@ class EventsController extends BaseController
     ]
      */
 
-    public function getEventsWithWorkshops()
+    public function getEventsWithWorkshops(): Collection
     {
         return ($query = Event::query())
             ->with(
@@ -181,8 +183,20 @@ class EventsController extends BaseController
     ```
      */
 
-    public function getFutureEventsWithWorkshops()
+    public function getFutureEventsWithWorkshops(): Collection
     {
-        throw new \Exception ('implement in coding task 2');
+        return ($query = Event::query())
+            ->with(
+                [
+                    'workshops'
+                ]
+            )
+            ->whereHas(
+                'workshops',
+                function (Builder $query) {
+                    $query->where($query->qualifyColumn('start'), '>=', now());
+                }
+            )
+            ->get();
     }
 }
