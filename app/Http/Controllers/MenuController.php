@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MenuItem;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Collection;
 
 class MenuController extends BaseController
 {
@@ -92,7 +93,15 @@ class MenuController extends BaseController
     ]
      */
 
-    public function getMenuItems() {
-        throw new \Exception('implement in coding task 3');
+    public function getMenuItems(): Collection
+    {
+        return ($query = MenuItem::query())
+            ->whereNull('parent_id')
+            ->with(
+                [
+                    'children.children'
+                ]
+            )
+            ->get();
     }
 }
